@@ -16,9 +16,12 @@ const StarNotary = contract(StarNotaryArtifact)
 // For application bootstrapping, check out window.addEventListener below.
 let accounts
 let account
+var instance
 
 const createStar = async () => {
-  const instance = await StarNotary.deployed();
+  if(typeof instance == 'undefined'){
+    instance = await StarNotary.deployed();
+  }
   const name = document.getElementById("starName").value;
   const id = document.getElementById("starId").value;
   await instance.createStar(name, id, {from: account});
@@ -26,7 +29,17 @@ const createStar = async () => {
 }
 
 // Add a function lookUp to Lookup a star by ID using tokenIdToStarInfo()
-
+const getStarByToken = async () => {
+  if(typeof instance == 'undefined'){
+    instance = await StarNotary.deployed();
+  }
+  const id = document.getElementById("starId2").value;
+  let name = await instance.lookUptokenIdToStarInfo(id, {from: account});
+  if (name == ''){
+    name = 'No Star Found !!!'
+  } 
+  App.setStar("Star Name: " + name );
+}
 //
 
 const App = {
@@ -59,8 +72,17 @@ const App = {
     status.innerHTML = message
   },
 
+  setStar: function (message) {
+    const status = document.getElementById('status2')
+    status.innerHTML = message
+  },
+
   createStar: function () {
     createStar();
+  },
+
+  getStarByToken: function () {
+    getStarByToken();
   },
 
 }
